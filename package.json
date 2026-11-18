@@ -1,0 +1,137 @@
+{
+  "name": "nocthost",
+  "displayName": "NoctHost",
+  "description": "See and manage your NoctHost cloud servers (Hetzner, Vultr, DigitalOcean, Linode, OVHcloud) from VS Code: balance, SSH in one click, reboot, power and destroy.",
+  "version": "0.1.0",
+  "publisher": "nocthost",
+  "license": "MIT",
+  "icon": "media/icon.png",
+  "homepage": "https://nocthost.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DanielChernov7/vscode-nocthost"
+  },
+  "bugs": {
+    "url": "https://github.com/DanielChernov7/vscode-nocthost/issues"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "vps",
+    "cloud",
+    "server",
+    "ssh",
+    "hetzner",
+    "vultr",
+    "digitalocean",
+    "linode",
+    "gpu",
+    "devops"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "nocthost",
+          "title": "NoctHost",
+          "icon": "media/activity.svg"
+        }
+      ]
+    },
+    "views": {
+      "nocthost": [
+        {
+          "id": "nocthost.servers",
+          "name": "Servers"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "nocthost.servers",
+        "contents": "Connect your NoctHost account with a personal API key.\n[Set API key](command:nocthost.setApiKey)\nCreate a key in the dashboard under Profile, API keys.\n[Open dashboard](https://nocthost.com/dashboard/profile)\nNo account yet? [See what deploys right now](https://nocthost.com/deploy-now)",
+        "when": "!nocthost.hasKey"
+      }
+    ],
+    "commands": [
+      { "command": "nocthost.setApiKey", "title": "Set API Key", "category": "NoctHost", "icon": "$(key)" },
+      { "command": "nocthost.clearApiKey", "title": "Remove API Key", "category": "NoctHost" },
+      { "command": "nocthost.refresh", "title": "Refresh", "category": "NoctHost", "icon": "$(refresh)" },
+      { "command": "nocthost.deploy", "title": "Deploy a Server (opens dashboard)", "category": "NoctHost", "icon": "$(add)" },
+      { "command": "nocthost.ssh", "title": "SSH into Server", "category": "NoctHost", "icon": "$(terminal)" },
+      { "command": "nocthost.copyIp", "title": "Copy IP Address", "category": "NoctHost" },
+      { "command": "nocthost.openInDashboard", "title": "Open in Dashboard", "category": "NoctHost", "icon": "$(link-external)" },
+      { "command": "nocthost.reboot", "title": "Reboot", "category": "NoctHost" },
+      { "command": "nocthost.stop", "title": "Power Off", "category": "NoctHost" },
+      { "command": "nocthost.start", "title": "Power On", "category": "NoctHost" },
+      { "command": "nocthost.destroy", "title": "Destroy Server", "category": "NoctHost" }
+    ],
+    "menus": {
+      "view/title": [
+        { "command": "nocthost.deploy", "when": "view == nocthost.servers && nocthost.hasKey", "group": "navigation@1" },
+        { "command": "nocthost.refresh", "when": "view == nocthost.servers && nocthost.hasKey", "group": "navigation@2" },
+        { "command": "nocthost.setApiKey", "when": "view == nocthost.servers", "group": "navigation@3" }
+      ],
+      "view/item/context": [
+        { "command": "nocthost.ssh", "when": "view == nocthost.servers && viewItem =~ /server-active-ssh/", "group": "inline@1" },
+        { "command": "nocthost.openInDashboard", "when": "view == nocthost.servers && viewItem =~ /^server/", "group": "inline@2" },
+        { "command": "nocthost.ssh", "when": "view == nocthost.servers && viewItem =~ /server-active-ssh/", "group": "1_connect@1" },
+        { "command": "nocthost.copyIp", "when": "view == nocthost.servers && viewItem =~ /^server/", "group": "1_connect@2" },
+        { "command": "nocthost.openInDashboard", "when": "view == nocthost.servers && viewItem =~ /^server/", "group": "1_connect@3" },
+        { "command": "nocthost.reboot", "when": "view == nocthost.servers && viewItem =~ /server-active/", "group": "2_power@1" },
+        { "command": "nocthost.stop", "when": "view == nocthost.servers && viewItem =~ /server-active/", "group": "2_power@2" },
+        { "command": "nocthost.start", "when": "view == nocthost.servers && viewItem =~ /server-stopped/", "group": "2_power@3" },
+        { "command": "nocthost.destroy", "when": "view == nocthost.servers && viewItem =~ /^server/", "group": "3_danger@1" }
+      ],
+      "commandPalette": [
+        { "command": "nocthost.ssh", "when": "false" },
+        { "command": "nocthost.copyIp", "when": "false" },
+        { "command": "nocthost.openInDashboard", "when": "false" },
+        { "command": "nocthost.reboot", "when": "false" },
+        { "command": "nocthost.stop", "when": "false" },
+        { "command": "nocthost.start", "when": "false" },
+        { "command": "nocthost.destroy", "when": "false" }
+      ]
+    },
+    "configuration": {
+      "title": "NoctHost",
+      "properties": {
+        "nocthost.apiUrl": {
+          "type": "string",
+          "default": "https://api.nocthost.com",
+          "description": "NoctHost API base URL."
+        },
+        "nocthost.sshUser": {
+          "type": "string",
+          "default": "root",
+          "description": "User for the SSH command."
+        },
+        "nocthost.autoRefreshSeconds": {
+          "type": "number",
+          "default": 30,
+          "minimum": 0,
+          "description": "Refresh the server list every N seconds while the view is open. 0 turns it off."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "watch": "tsc -watch -p .",
+    "test": "npm run compile && node --test out/test/*.test.js",
+    "vscode:prepublish": "npm run compile",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "1.85.0",
+    "@vscode/vsce": "^3.2.1",
+    "typescript": "^5.4.0"
+  }
+}
